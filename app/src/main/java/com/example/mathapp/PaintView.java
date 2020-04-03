@@ -43,11 +43,19 @@ public class PaintView extends View {
                 initialY = y;
                 offsetX = event.getX();
                 offsetY = event.getY();
+//                boolean circlePresent = false;
+//                for (Point point : points) {
+//                    if (offsetX <= point.x + RADIUS && offsetX <= point.y + RADIUS) {
+//
+//                    }
+//                }
+
                 break;
             case MotionEvent.ACTION_UP:
                 x = initialX + event.getX() - offsetX;
                 y = initialY + event.getY() - offsetY;
-                if (x <= initialX + RADIUS && y <= initialY + RADIUS) {
+                if (x <= initialX + RADIUS && x >= initialX - RADIUS
+                        && y <= initialY + RADIUS && y >= initialY - RADIUS) {
                     if (myCircle.getColor() == Color.BLUE) {
                         myCircle.setColor(Color.RED);
                     } else {
