@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.util.AttributeSet;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -21,45 +22,58 @@ public class PaintView extends View {
     private float initialY;
     private float offsetX;
     private float offsetY;
-    private Paint myCircle;
     private Paint backgroundPaint;
-    private List<Point> points = new ArrayList<>();
+    int myIdCircle = 0;
+    private List<MyCircle> myCircles = new ArrayList<>();
 
     public PaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.BLACK);
-        myCircle = new Paint();
-        myCircle.setColor(Color.BLUE);
-        myCircle.setAntiAlias(true);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        MyCircle initialCircle = new MyCircle();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 initialX = x;
                 initialY = y;
                 offsetX = event.getX();
                 offsetY = event.getY();
-//                boolean circlePresent = false;
-//                for (Point point : points) {
-//                    if (offsetX <= point.x + RADIUS && offsetX <= point.y + RADIUS) {
-//
-//                    }
-//                }
 
+                boolean circleNotPresent = true;
+                int i = 0;
+                for (MyCircle mc : myCircles) {
+                    if (offsetX <= mc.getX() + RADIUS && offsetX >= mc.getX()  - RADIUS
+                            && offsetY <= mc.getY()  + RADIUS && offsetY >= mc.getY() - RADIUS) {
+                        circleNotPresent = false;
+                        initialX = mc.getX();
+                        initialY =  mc.getY();
+                        myIdCircle = i;
+                        break;
+                    }
+                    i++;
+                }
+                if (circleNotPresent) {
+                    initialCircle.setX(offsetX);
+                    initialCircle.setY(offsetY);
+                    myCircles.add(initialCircle);
+                    initialX = offsetX;
+                    initialY = offsetY;
+                    myIdCircle = i++;
+                }
                 break;
             case MotionEvent.ACTION_UP:
                 x = initialX + event.getX() - offsetX;
                 y = initialY + event.getY() - offsetY;
                 if (x <= initialX + RADIUS && x >= initialX - RADIUS
                         && y <= initialY + RADIUS && y >= initialY - RADIUS) {
-                    if (myCircle.getColor() == Color.BLUE) {
-                        myCircle.setColor(Color.RED);
+                    if (myCircles.get(myIdCircle).getMyPaint().getColor() == Color.BLUE) {
+                        myCircles.get(myIdCircle).getMyPaint().setColor(Color.RED);
                     } else {
-                        myCircle.setColor(Color.BLUE);
+                        myCircles.get(myIdCircle).getMyPaint().setColor(Color.BLUE);
                     }
                 }
                 break;
@@ -67,6 +81,8 @@ public class PaintView extends View {
             case MotionEvent.ACTION_CANCEL:
                 x = initialX + event.getX() - offsetX;
                 y = initialY + event.getY() - offsetY;
+                myCircles.get(myIdCircle).setX(x);
+                myCircles.get(myIdCircle).setY(y);
                 break;
         }
         return (true);
@@ -77,7 +93,9 @@ public class PaintView extends View {
         int width = canvas.getWidth();
         int height = canvas.getHeight();
         canvas.drawRect(0, 0, width, height, backgroundPaint);
-        canvas.drawCircle(x, y, RADIUS, myCircle);
+        for (MyCircle myCircle : myCircles) {
+            canvas.drawCircle(myCircle.getX(), myCircle.getY(), RADIUS, myCircle.getMyPaint());
+        }
         invalidate();
     }
 }
