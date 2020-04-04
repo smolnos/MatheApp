@@ -1,6 +1,5 @@
 package com.example.mathapp;
 
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Paint;
 
@@ -23,7 +22,7 @@ public class MyCircle {
     private Paint myPaintBorder;
 
 
-    public MyCircle() {
+    MyCircle() {
 
         myPaint = new Paint();
         myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
@@ -46,7 +45,7 @@ public class MyCircle {
         return this.myPaint.getColor();
     }
 
-    public void setColorBorder(int parseColor) {
+    void setColorBorder(int parseColor) {
         this.myPaintBorder.setColor(parseColor);
     }
 }
