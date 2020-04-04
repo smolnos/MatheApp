@@ -3,6 +3,11 @@ package com.example.mathapp;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class MyCircle {
     private float x;
     private float y;
@@ -12,45 +17,14 @@ public class MyCircle {
         myPaint = new Paint();
         myPaint.setColor(Color.BLUE);
         myPaint.setAntiAlias(true);
+        myPaint.setStrokeWidth(30F);
     }
 
-    public MyCircle(float x, float y, Paint myPaint) {
-        this.x = x;
-        this.y = y;
-        this.myPaint = myPaint;
+    void setColor(int color) {
+        this.myPaint.setColor(color);
     }
 
-    public MyCircle(float x, float y) {
-        this.x = x;
-        this.y = y;
-        myPaint = new Paint();
-        myPaint.setColor(Color.BLUE);
-        myPaint.setAntiAlias(true);
+    int getColor() {
+        return this.myPaint.getColor();
     }
-
-    public float getX() {
-        return x;
-    }
-
-    public void setX(float x) {
-        this.x = x;
-    }
-
-    public float getY() {
-        return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
-    }
-
-
-    public Paint getMyPaint() {
-        return myPaint;
-    }
-
-    public void setMyPaint(Paint myPaint) {
-        this.myPaint = myPaint;
-    }
-
 }
