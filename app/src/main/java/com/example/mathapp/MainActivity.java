@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
@@ -32,26 +33,56 @@ public class MainActivity extends AppCompatActivity {
     private static final int CAMERA_REQUEST = 1;
     private static final int GALLERY_REQUEST = 2;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
-    ImageView viewImage;
-    Button b;
+    private ImageView viewImage;
+    private Button b;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+    private static final String FRAGMENT_NAME = "imageFragment";
+    private Bitmap photo;
+    private ImageRetainingFragment imageRetainingFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeImageRetainingFragment();
         setContentView(R.layout.activity_main);
         b = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
-
+        tryLoadImage();
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 selectImage();
             }
         });
+
     }
 
+    private void initializeImageRetainingFragment() {
+        // find the retained fragment on activity restarts
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        this.imageRetainingFragment = (ImageRetainingFragment) fragmentManager.findFragmentByTag(FRAGMENT_NAME);
+        // create the fragment and bitmap the first time
+        if (this.imageRetainingFragment == null) {
+            this.imageRetainingFragment = new ImageRetainingFragment();
+            fragmentManager.beginTransaction()
+                    // Add a fragment to the activity state.
+                    .add(this.imageRetainingFragment, FRAGMENT_NAME)
+                    .commit();
+        }
+    }
+
+    private void tryLoadImage() {
+        if (this.imageRetainingFragment == null) {
+            return;
+        }
+        Bitmap selectedImage = this.imageRetainingFragment.getImage();
+        if (selectedImage == null) {
+            return;
+        }
+        ImageView selectedImageView = findViewById(R.id.viewImage);
+        selectedImageView.setImageBitmap(selectedImage);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -62,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void selectImage() {
-        final CharSequence[] options = { "Foto erstellen", "Aus Galerie wählen","Abbrechen" };
+        final CharSequence[] options = {"Foto erstellen", "Aus Galerie wählen", "Abbrechen"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("Foto hinzufügen");
         builder.setItems(options, new DialogInterface.OnClickListener() {
@@ -81,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
                         File imagePath = new File(MainActivity.this.getFilesDir(), "images");
                         File newFile = new File(imagePath, "default_image.jpg");
                         Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", newFile);
-                        Intent intent = new   Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                         startActivityForResult(intent, GALLERY_REQUEST);
                     } else {
@@ -93,22 +124,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.show();
+
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
-    {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE)
-        {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            {
+        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            }
-            else
-            {
+            } else {
                 Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
             }
         }
@@ -119,23 +146,27 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             if (requestCode == 1) {
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
-                    viewImage.setImageBitmap(photo);
+                photo = (Bitmap) data.getExtras().get("data");
+                viewImage.setImageBitmap(photo);
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
-                String[] filePath = { MediaStore.Images.Media.DATA };
+                String[] filePath = {MediaStore.Images.Media.DATA};
                 assert selectedImage != null;
-                Cursor c = getContentResolver().query(selectedImage,filePath, null, null, null);
+                Cursor c = getContentResolver().query(selectedImage, filePath, null, null, null);
                 assert c != null;
                 c.moveToFirst();
                 int columnIndex = c.getColumnIndex(filePath[0]);
                 String picturePath = c.getString(columnIndex);
                 c.close();
-                Bitmap thumbnail = (BitmapFactory.decodeFile(picturePath));
+                photo = (BitmapFactory.decodeFile(picturePath));
                 Log.w("image path from gallery", picturePath + "");
-                viewImage.setImageBitmap(thumbnail);
+                viewImage.setImageBitmap(photo);
             }
+            this.imageRetainingFragment.setImage(photo);
         }
     }
+
+
 }
+
 

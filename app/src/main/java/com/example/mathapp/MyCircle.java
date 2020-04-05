@@ -9,8 +9,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MyCircle {
-    public static final float RADIUS = 60;
-    public static final float RADIUS_BORDER = 80;
+    public static final float RADIUS = 30;
+    public static final float RADIUS_BORDER = 50;
     public static final int BLUE = Color.parseColor("#000ffa");
     public static final int BLUE_BORDER = Color.parseColor("#4287f5");
     public static final int RED = Color.parseColor("#ff0042");

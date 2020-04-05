@@ -58,9 +58,9 @@ public class PaintView extends View {
      * myCircleY) and radius RADIUS
      */
     private boolean isEventInCircle(MyCircle myCircle, MotionEvent event) {
-        return event.getX() <= myCircle.getX() + MyCircle.RADIUS && event.getX() >= myCircle.getX()
-                - MyCircle.RADIUS && event.getY() <= myCircle.getY() + MyCircle.RADIUS &&
-                event.getY() >= myCircle.getY() - MyCircle.RADIUS;
+        return event.getX() <= myCircle.getX() + MyCircle.RADIUS + OFFSET / 2 && event.getX() >= myCircle.getX()
+                - MyCircle.RADIUS -  OFFSET / 2 && event.getY() <= myCircle.getY() + MyCircle.RADIUS  + OFFSET / 2 &&
+                event.getY() >= myCircle.getY() - MyCircle.RADIUS -  OFFSET / 2;
     }
 
     /**
@@ -113,8 +113,8 @@ public class PaintView extends View {
     private void changeColor(MotionEvent event) {
         mcNewPositionX = mcOnTouchX + event.getX() - moveX;
         mcNewPositionY = mcOnTouchY + event.getY() - moveY;
-        if (mcNewPositionX <= mcOnTouchX +  MyCircle.RADIUS && mcNewPositionX >= mcOnTouchX -  MyCircle.RADIUS
-                && mcNewPositionY <= mcOnTouchY +  MyCircle.RADIUS && mcNewPositionY >= mcOnTouchY -  MyCircle.RADIUS) {
+        if (mcNewPositionX <= mcOnTouchX +  MyCircle.RADIUS  * 2/3 && mcNewPositionX >= mcOnTouchX -  MyCircle.RADIUS  * 2/3
+                && mcNewPositionY <= mcOnTouchY +  MyCircle.RADIUS  * 2/3 && mcNewPositionY >= mcOnTouchY -  MyCircle.RADIUS  * 2/3) {
             if (myCircles.get(indexMyCircles).getColor() == MyCircle.BLUE) {
                 myCircles.get(indexMyCircles).setColor(MyCircle.RED);
                 myCircles.get(indexMyCircles).setColorBorder(MyCircle.RED_BORDER);
