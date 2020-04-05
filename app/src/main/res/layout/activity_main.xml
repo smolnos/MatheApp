@@ -4,10 +4,32 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rl"
-    tools:context=".MainActivity" >
+    tools:context=".MainActivity">
 
-
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="5dp" >
+        <ImageView
+            android:id="@+id/viewImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+         />
+    </LinearLayout>
     <com.example.mathapp.PaintView
-        android:id="@+id/paint_view" android:tag="truePainView"
-        android:layout_width="wrap_content"  android:layout_height="wrap_content" />
+            android:id="@+id/paint_view" android:tag="truePainView"
+            android:layout_width="wrap_content"  android:layout_height="wrap_content" />
+    <Button
+        android:id="@+id/btnSelectPhoto"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/camera"
+        android:text="@string/foto_hinzufuegen"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        />
+
+
 </RelativeLayout>

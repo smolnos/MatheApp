@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">MathApp</string>
+    <string name="action_settings">Settings</string>
+    <string name="select_photo">"  Foto hinzufügen"</string>
+    <string name="individual_foto">Individual foto</string>
+    <string name="foto_hinzufuegen">Foto hinzufügen</string>
 </resources>

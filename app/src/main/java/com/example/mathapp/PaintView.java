@@ -2,8 +2,6 @@ package com.example.mathapp;
 
 import android.content.Context;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,21 +11,19 @@ import java.util.List;
 
 public class PaintView extends View {
 
+    private final int OFFSET = 30;
     private float mcNewPositionX = 30;
     private float mcNewPositionY = 30;
     private float mcOnTouchX;
     private float mcOnTouchY;
     private float moveX;
     private float moveY;
-    private Paint backgroundPaint;
     int indexMyCircles = 0;
     private List<MyCircle> myCircles = new ArrayList<>();
 
+
     public PaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
-
-        backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.BLACK);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -56,7 +52,7 @@ public class PaintView extends View {
 
     /**
      * check if current event touched a circle
-     * @param myCircle instance of class Mycircle
+     * @param myCircle instance of class Mycircle taken from list myCircles
      * @param event instance of class Motionevent
      * @return true if event with point (eventX, eventY) is within circle having center (myCircleX,
      * myCircleY) and radius RADIUS
@@ -69,7 +65,7 @@ public class PaintView extends View {
 
     /**
      * check if new touch is whithin a circle. If so, set myIdCircle to this circle
-     * and return that circle already present, i.e. false. If no, just return true that circle is
+     * and return that circle is already present, i.e. false. If no, just return true that circle is
      * not present
      * @return boolean true if circle is not in list myCircles
      */
@@ -84,7 +80,7 @@ public class PaintView extends View {
                 circleNotPresent = false;
                 mcOnTouchX = mc.getX();
                 mcOnTouchY =  mc.getY();
-                indexMyCircles = i; //index of myCircles of that object myCircle which should be
+                indexMyCircles = i; //index of myCircles of that instance myCircle which should be
                                 // changed later (position, color, deletion)
                 break;
             }
@@ -112,7 +108,7 @@ public class PaintView extends View {
     /**
      * change color of this circle if the event just touched this circle and does not move in
      * another direction
-     * @param event paramer of the new event needed to compute new position of this circle
+     * @param event parameter of the new event needed to compute new position of this circle
      */
     private void changeColor(MotionEvent event) {
         mcNewPositionX = mcOnTouchX + event.getX() - moveX;
@@ -145,9 +141,8 @@ public class PaintView extends View {
      * @return true if x value or y value are below offset or greater than width/ height
      */
     private boolean circleOutOfScreen() {
-        int offset = 30;
-        return mcNewPositionX <= offset || mcNewPositionX >= getWidth() - offset
-                || mcNewPositionY <= offset || mcNewPositionY >= getHeight() - offset;
+        return mcNewPositionX <= OFFSET || mcNewPositionX >= getWidth() - OFFSET
+                || mcNewPositionY <= OFFSET || mcNewPositionY >= getHeight() - OFFSET;
     }
 
     /**
@@ -165,9 +160,6 @@ public class PaintView extends View {
      */
     public void draw(Canvas canvas) {
         super.draw(canvas);
-        int width = canvas.getWidth();
-        int height = canvas.getHeight();
-        canvas.drawRect(0, 0, width, height, backgroundPaint);
         for (MyCircle myCircle : myCircles) {
             canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS_BORDER, myCircle.getMyPaintBorder());
             canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS, myCircle.getMyPaint());
