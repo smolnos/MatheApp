@@ -151,6 +151,9 @@ public class PaintView extends View {
     private void deleteCircle(MotionEvent event) {
         if (myCircles.isEmpty()) return;
         myCircles.remove(indexMyCircles);
+        if (myCircles.isEmpty()) return;
+        mcNewPositionX = myCircles.get(myCircles.size() - 1).getX();
+        mcNewPositionY = myCircles.get(myCircles.size() - 1).getY();
     }
 
     /**

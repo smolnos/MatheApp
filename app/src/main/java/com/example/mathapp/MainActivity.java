@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
@@ -58,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * create fragment to save previously loaded picture. This allows to load picture again,
+     * if screen is rotated and thus onCreate() is called again
+     */
     private void initializeImageRetainingFragment() {
         // find the retained fragment on activity restarts
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -72,6 +75,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * instance fragmentManager loads previously saved picture if screen was rotated
+     */
     private void tryLoadImage() {
         if (this.imageRetainingFragment == null) {
             return;
@@ -91,7 +97,12 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-
+    /**
+     * method that call submethods to loads picture in screen: 3 options
+     * 1. take a picture
+     * 2. load a picture from gallery
+     * 3. cancel dialog
+     */
     private void selectImage() {
         final CharSequence[] options = {"Foto erstellen", "Aus Galerie wählen", "Abbrechen"};
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
@@ -127,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * ToDO really needed???? Or can it be deleted?
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -141,6 +158,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * load of pictures to background
+      * @param requestCode 1 or 2, 1 = take a picture, 2 = load a picture from gallery
+     * @param resultCode = RESULT_OK TODO was bedeutet das?
+     * @param data the information of the picture
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -159,7 +182,6 @@ public class MainActivity extends AppCompatActivity {
                 String picturePath = c.getString(columnIndex);
                 c.close();
                 photo = (BitmapFactory.decodeFile(picturePath));
-                Log.w("image path from gallery", picturePath + "");
                 viewImage.setImageBitmap(photo);
             }
             this.imageRetainingFragment.setImage(photo);
@@ -167,6 +189,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    @Override
+    public void onDestroy() {
+        this.imageRetainingFragment.setImage(photo);
+        super.onDestroy();
+    }
 }
 
 
