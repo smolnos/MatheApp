@@ -184,6 +184,12 @@ public class PaintView extends View {
     protected void onSizeChanged(int width, int height,
                                  int oldWidth, int oldHeight) {
         super.onSizeChanged(width, height, oldWidth, oldHeight);
+        float tmp;
+        for (MyCircle myCircle : myCircles) {
+            tmp = myCircle.getX();
+            myCircle.setX(myCircle.getY());
+            myCircle.setY(tmp);
+        }
 
     }
 }
