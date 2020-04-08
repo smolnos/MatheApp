@@ -20,10 +20,9 @@ public class MyCircle {
     private float y;
     private Paint myPaint;
     private Paint myPaintBorder;
-
+    private String color;
 
     MyCircle() {
-
         myPaint = new Paint();
         myPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         myPaint.setStrokeWidth(30F);
@@ -48,4 +47,5 @@ public class MyCircle {
     void setColorBorder(int parseColor) {
         this.myPaintBorder.setColor(parseColor);
     }
+
 }

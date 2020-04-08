@@ -38,4 +38,8 @@ dependencies {
 
     // For developers using the Android Support Library
     implementation 'pub.devrel:easypermissions:2.0.1'
+
+//    annotationProcessor 'com.google.auto.value:auto-value:1.4'
+//    annotationProcessor 'com.ryanharter.auto.value:auto-value-parcel:0.2.5'
+//    compileOnly 'com.jakewharton.auto.value:auto-value-annotations:1.4'
 }

@@ -9,6 +9,12 @@ import android.view.View;
 import java.util.ArrayList;
 import java.util.List;
 
+import lombok.Getter;
+import lombok.Setter;
+
+
+@Getter
+@Setter
 public class PaintView extends View {
 
     private final int OFFSET = 30;
@@ -19,11 +25,16 @@ public class PaintView extends View {
     private float moveX;
     private float moveY;
     int indexMyCircles = 0;
+    boolean changed = false;
     private List<MyCircle> myCircles = new ArrayList<>();
 
 
     public PaintView(Context context, AttributeSet attrs) {
         super(context, attrs);
+    }
+
+    public PaintView(Context context) {
+        super(context);
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -36,7 +47,7 @@ public class PaintView extends View {
                 break;
             case MotionEvent.ACTION_UP:
                 if (circleOutOfScreen()) {
-                    deleteCircle(event);
+                    deleteCircle();
                 } else {
                     changeColor(event);
                 }
@@ -58,9 +69,9 @@ public class PaintView extends View {
      * myCircleY) and radius RADIUS
      */
     private boolean isEventInCircle(MyCircle myCircle, MotionEvent event) {
-        return event.getX() <= myCircle.getX() + MyCircle.RADIUS + OFFSET / 2 && event.getX() >= myCircle.getX()
-                - MyCircle.RADIUS -  OFFSET / 2 && event.getY() <= myCircle.getY() + MyCircle.RADIUS  + OFFSET / 2 &&
-                event.getY() >= myCircle.getY() - MyCircle.RADIUS -  OFFSET / 2;
+        return event.getX() <= myCircle.getX() + MyCircle.RADIUS + OFFSET / 2. && event.getX() >= myCircle.getX()
+                - MyCircle.RADIUS -  OFFSET / 2. && event.getY() <= myCircle.getY() + MyCircle.RADIUS  + OFFSET / 2. &&
+                event.getY() >= myCircle.getY() - MyCircle.RADIUS -  OFFSET / 2.;
     }
 
     /**
@@ -81,7 +92,7 @@ public class PaintView extends View {
                 mcOnTouchX = mc.getX();
                 mcOnTouchY =  mc.getY();
                 indexMyCircles = i; //index of myCircles of that instance myCircle which should be
-                                // changed later (position, color, deletion)
+                // changed later (position, color, deletion)
                 break;
             }
             i++;
@@ -148,7 +159,7 @@ public class PaintView extends View {
     /**
      * delete circles if center is outside the screen
      */
-    private void deleteCircle(MotionEvent event) {
+    private void deleteCircle() {
         if (myCircles.isEmpty()) return;
         myCircles.remove(indexMyCircles);
         if (myCircles.isEmpty()) return;
@@ -157,7 +168,6 @@ public class PaintView extends View {
     }
 
     /**
-     * fist draw rectangle that represents the canvas
      * second draw all points twice with different radius to simulate border of point
      * @param canvas canvas on which the rectangle and points are drawn
      */
@@ -168,5 +178,12 @@ public class PaintView extends View {
             canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS, myCircle.getMyPaint());
         }
         invalidate();
+    }
+
+    @Override
+    protected void onSizeChanged(int width, int height,
+                                 int oldWidth, int oldHeight) {
+        super.onSizeChanged(width, height, oldWidth, oldHeight);
+
     }
 }

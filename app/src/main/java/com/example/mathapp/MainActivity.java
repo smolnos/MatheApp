@@ -16,13 +16,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
-import androidx.fragment.app.FragmentManager;
 
 import java.io.File;
 
@@ -35,59 +32,21 @@ public class MainActivity extends AppCompatActivity {
     private ImageView viewImage;
     private Button b;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
-    private static final String FRAGMENT_NAME = "imageFragment";
     private Bitmap photo;
-    private ImageRetainingFragment imageRetainingFragment;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initializeImageRetainingFragment();
         setContentView(R.layout.activity_main);
         b = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
-        tryLoadImage();
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 selectImage();
             }
         });
-
-    }
-
-    /**
-     * create fragment to save previously loaded picture. This allows to load picture again,
-     * if screen is rotated and thus onCreate() is called again
-     */
-    private void initializeImageRetainingFragment() {
-        // find the retained fragment on activity restarts
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        this.imageRetainingFragment = (ImageRetainingFragment) fragmentManager.findFragmentByTag(FRAGMENT_NAME);
-        // create the fragment and bitmap the first time
-        if (this.imageRetainingFragment == null) {
-            this.imageRetainingFragment = new ImageRetainingFragment();
-            fragmentManager.beginTransaction()
-                    // Add a fragment to the activity state.
-                    .add(this.imageRetainingFragment, FRAGMENT_NAME)
-                    .commit();
-        }
-    }
-
-    /**
-     * instance fragmentManager loads previously saved picture if screen was rotated
-     */
-    private void tryLoadImage() {
-        if (this.imageRetainingFragment == null) {
-            return;
-        }
-        Bitmap selectedImage = this.imageRetainingFragment.getImage();
-        if (selectedImage == null) {
-            return;
-        }
-        ImageView selectedImageView = findViewById(R.id.viewImage);
-        selectedImageView.setImageBitmap(selectedImage);
     }
 
     @Override
@@ -139,28 +98,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * ToDO really needed???? Or can it be deleted?
-     * @param requestCode
-     * @param permissions
-     * @param grantResults
-     */
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == MY_CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "camera permission granted", Toast.LENGTH_LONG).show();
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(cameraIntent, CAMERA_REQUEST);
-            } else {
-                Toast.makeText(this, "camera permission denied", Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    /**
      * load of pictures to background
-      * @param requestCode 1 or 2, 1 = take a picture, 2 = load a picture from gallery
+     * @param requestCode 1 or 2, 1 = take a picture, 2 = load a picture from gallery
      * @param resultCode = RESULT_OK TODO was bedeutet das?
      * @param data the information of the picture
      */
@@ -184,16 +123,9 @@ public class MainActivity extends AppCompatActivity {
                 photo = (BitmapFactory.decodeFile(picturePath));
                 viewImage.setImageBitmap(photo);
             }
-            this.imageRetainingFragment.setImage(photo);
         }
     }
 
-
-    @Override
-    public void onDestroy() {
-        this.imageRetainingFragment.setImage(photo);
-        super.onDestroy();
-    }
 }
 
 
