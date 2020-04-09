@@ -1,4 +1,4 @@
-package com.example.mathapp;
+package com.example.RechenpateApp;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -20,6 +20,8 @@ import android.widget.ImageView;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+
+import com.example.RechenpateApp.R;
 
 import java.io.File;
 

@@ -1,4 +1,4 @@
-package com.example.mathapp;
+package com.example.RechenpateApp;
 
 import android.graphics.Color;
 import android.graphics.Paint;

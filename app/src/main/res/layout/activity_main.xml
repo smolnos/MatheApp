@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rl"
-    tools:context=".MainActivity">
+    tools:context="com.example.RechenpateApp.MainActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:layout_height="match_parent"
          />
     </LinearLayout>
-    <com.example.mathapp.PaintView
+    <com.example.RechenpateApp.PaintView
             android:id="@+id/paint_view" android:tag="truePaintView"
             android:layout_width="wrap_content"  android:layout_height="wrap_content" />
     <Button
