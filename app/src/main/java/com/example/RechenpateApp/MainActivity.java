@@ -48,9 +48,14 @@ public class MainActivity extends AppCompatActivity {
         bTakePicture = findViewById(R.id.btnTakePhoto);
         bGallery = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
-        setOnClickListerners();
+        setOnClickListeners();
     }
 
+    /**
+     * close fab menu if you click somewhere else but not the buttons
+     * @param event event where you touched
+     * @return boolean decides how to route the touch events.
+     */
     public boolean dispatchTouchEvent(MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             if (isFABOpen) {
@@ -67,7 +72,10 @@ public class MainActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    private void setOnClickListerners() {
+    /**
+     * setup click listeners to all floating action buttons
+     */
+    private void setOnClickListeners() {
         bAddPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
