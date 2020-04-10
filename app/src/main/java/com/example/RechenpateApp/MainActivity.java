@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
                 boolean deleteTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
                 if (!(galleryTouched || takePictureTouched || deleteTouched)) {
                     closeFABMenu();
+                    return true;
                 }
             }
         }
@@ -81,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
         bAddPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!isFABOpen){
+                if (!isFABOpen) {
                     showFABMenu();
-                }else{
+                } else {
                     closeFABMenu();
                 }
             }
