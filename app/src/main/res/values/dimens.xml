@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="standard_21">21dp</dimen>
+    <dimen name="standard_45">45dp</dimen>
+    <dimen name="standard_55">55dp</dimen>
+    <dimen name="standard_65">65dp</dimen>
+    <dimen name="standard_67">67dp</dimen>
+    <dimen name="standard_105">105dp</dimen>
+    <dimen name="standard_130">130dp</dimen>
+    <dimen name="standard_155">155dp</dimen>
+</resources>

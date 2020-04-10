@@ -1,8 +1,6 @@
 package com.example.RechenpateApp;
 
 import android.Manifest;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -12,16 +10,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
-import com.example.RechenpateApp.R;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
 
@@ -32,72 +28,108 @@ public class MainActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 2;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private ImageView viewImage;
-    private Button b;
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
-    private Bitmap photo;
+    boolean isFABOpen = false;
+    FloatingActionButton bAddPicture;
+    FloatingActionButton bDelete;
+    FloatingActionButton bTakePicture;
+    FloatingActionButton bGallery;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        b = findViewById(R.id.btnSelectPhoto);
+
+        bAddPicture = findViewById(R.id.btnAddPhoto);
+        bDelete = findViewById(R.id.btnDeletePhoto);
+        bTakePicture = findViewById(R.id.btnTakePhoto);
+        bGallery = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
-        b.setOnClickListener(new View.OnClickListener() {
+        setOnClickListerners();
+    }
+
+    private void setOnClickListerners() {
+        bAddPicture.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                selectImage();
+            public void onClick(View view) {
+                if(!isFABOpen){
+                    showFABMenu();
+                }else{
+                    closeFABMenu();
+                }
+            }
+        });
+
+        bTakePicture.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.M)
+            @Override
+            public void onClick(View view) {
+                if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                    requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
+                } else {
+                    Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    startActivityForResult(cameraIntent, CAMERA_REQUEST);
+                }
+            }
+        });
+
+        bGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (EasyPermissions.hasPermissions(MainActivity.this, galleryPermissions)) {
+                    File imagePath = new File(MainActivity.this.getFilesDir(), "images");
+                    File newFile = new File(imagePath, "default_image.jpg");
+                    Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", newFile);
+                    Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                    startActivityForResult(intent, GALLERY_REQUEST);
+                } else {
+                    EasyPermissions.requestPermissions(MainActivity.this, "Access for storage", 101, galleryPermissions);
+                }
+            }
+        });
+
+        bDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                viewImage.setImageDrawable(null);
+                bDelete.setVisibility(View.INVISIBLE);
+                bDelete.animate().translationY(0);
+                bAddPicture.animate().translationY(0);
             }
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds options to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu, menu);
-        return super.onCreateOptionsMenu(menu);
+    private void closeFABMenu() {
+        isFABOpen=false;
+        bAddPicture.animate().translationY(0);
+        if (bDelete.getVisibility() == View.VISIBLE) {
+            bAddPicture.animate().translationY(+getResources().getDimension(R.dimen.standard_65));
+            bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_67));
+        }
+        bTakePicture.animate().translationY(0);
+        bGallery.animate().translationY(0);
+        bTakePicture.setVisibility(View.INVISIBLE);
+        bGallery.setVisibility(View.INVISIBLE);
     }
 
     /**
      * method that call submethods to loads picture in screen: 3 options
      * 1. take a picture
      * 2. load a picture from gallery
-     * 3. cancel dialog
      */
-    private void selectImage() {
-        final CharSequence[] options = {"Foto erstellen", "Aus Galerie wählen", "Abbrechen"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("Foto hinzufügen");
-        builder.setItems(options, new DialogInterface.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.M)
-            @Override
-            public void onClick(DialogInterface dialog, int item) {
-                if (options[item].equals("Foto erstellen")) {
-                    if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        requestPermissions(new String[]{Manifest.permission.CAMERA}, MY_CAMERA_PERMISSION_CODE);
-                    } else {
-                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(cameraIntent, CAMERA_REQUEST);
-                    }
-                } else if (options[item].equals("Aus Galerie wählen")) {
-                    if (EasyPermissions.hasPermissions(MainActivity.this, galleryPermissions)) {
-                        File imagePath = new File(MainActivity.this.getFilesDir(), "images");
-                        File newFile = new File(imagePath, "default_image.jpg");
-                        Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", newFile);
-                        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
-                        startActivityForResult(intent, GALLERY_REQUEST);
-                    } else {
-                        EasyPermissions.requestPermissions(MainActivity.this, "Access for storage", 101, galleryPermissions);
-                    }
-                } else if (options[item].equals("Abbrechen")) {
-                    dialog.dismiss();
-                }
-            }
-        });
-        builder.show();
 
+    private void showFABMenu() {
+        isFABOpen=true;
+        bAddPicture.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+        bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+        bTakePicture.setVisibility(View.VISIBLE);
+        bGallery.setVisibility(View.VISIBLE);
+        bTakePicture.animate().translationY(-getResources().getDimension(R.dimen.standard_130));
+        bGallery.animate().translationY(-getResources().getDimension(R.dimen.standard_130));
     }
+
 
     /**
      * load of pictures to background
@@ -109,9 +141,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
+            Bitmap photo;
             if (requestCode == 1) {
                 photo = (Bitmap) data.getExtras().get("data");
                 viewImage.setImageBitmap(photo);
+                bDelete.setVisibility(View.VISIBLE);
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
@@ -124,7 +158,9 @@ public class MainActivity extends AppCompatActivity {
                 c.close();
                 photo = (BitmapFactory.decodeFile(picturePath));
                 viewImage.setImageBitmap(photo);
+                bDelete.setVisibility(View.VISIBLE);
             }
+            closeFABMenu();
         }
     }
 
