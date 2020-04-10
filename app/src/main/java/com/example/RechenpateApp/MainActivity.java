@@ -6,10 +6,12 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -47,6 +49,22 @@ public class MainActivity extends AppCompatActivity {
         bGallery = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
         setOnClickListerners();
+    }
+
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (isFABOpen) {
+                Rect outRect = new Rect();
+                bGallery.getGlobalVisibleRect(outRect);
+                boolean galleryTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
+                bTakePicture.getGlobalVisibleRect(outRect);
+                boolean takePictureTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
+                if (!(galleryTouched || takePictureTouched)) {
+                    closeFABMenu();
+                }
+            }
+        }
+        return super.dispatchTouchEvent(event);
     }
 
     private void setOnClickListerners() {
@@ -102,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void closeFABMenu() {
-        isFABOpen=false;
+        isFABOpen = false;
         bAddPicture.animate().translationY(0);
         if (bDelete.getVisibility() == View.VISIBLE) {
             bAddPicture.animate().translationY(+getResources().getDimension(R.dimen.standard_65));
