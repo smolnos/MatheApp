@@ -64,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
                 boolean galleryTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
                 bTakePicture.getGlobalVisibleRect(outRect);
                 boolean takePictureTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
-                if (!(galleryTouched || takePictureTouched)) {
+                bDelete.getGlobalVisibleRect(outRect);
+                boolean deleteTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
+                if (!(galleryTouched || takePictureTouched || deleteTouched)) {
                     closeFABMenu();
                 }
             }
@@ -120,9 +122,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 viewImage.setImageDrawable(null);
-                bDelete.setVisibility(View.INVISIBLE);
-                bDelete.animate().translationY(0);
-                bAddPicture.animate().translationY(0);
+                closeFABMenu();
             }
         });
     }
@@ -130,14 +130,12 @@ public class MainActivity extends AppCompatActivity {
     private void closeFABMenu() {
         isFABOpen = false;
         bAddPicture.animate().translationY(0);
-        if (bDelete.getVisibility() == View.VISIBLE) {
-            bAddPicture.animate().translationY(+getResources().getDimension(R.dimen.standard_65));
-            bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_67));
-        }
+        bDelete.animate().translationY(0);
         bTakePicture.animate().translationY(0);
         bGallery.animate().translationY(0);
         bTakePicture.setVisibility(View.INVISIBLE);
         bGallery.setVisibility(View.INVISIBLE);
+        bDelete.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -149,11 +147,12 @@ public class MainActivity extends AppCompatActivity {
     private void showFABMenu() {
         isFABOpen=true;
         bAddPicture.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
-        bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
+        bDelete.setVisibility(View.VISIBLE);
         bTakePicture.setVisibility(View.VISIBLE);
         bGallery.setVisibility(View.VISIBLE);
-        bTakePicture.animate().translationY(-getResources().getDimension(R.dimen.standard_130));
-        bGallery.animate().translationY(-getResources().getDimension(R.dimen.standard_130));
+        bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        bTakePicture.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        bGallery.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
     }
 
 
