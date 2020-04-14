@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/rl"
-    tools:context="com.example.RechenpateApp.MainActivity">
+    tools:context="com.example.RechenpateApp.de.example.RechenpateApp.MainActivity">
     <ImageView
         android:id="@+id/viewImage"
         android:scaleType="fitXY"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
     <!-- Main content -->
-    <com.example.RechenpateApp.PaintView
+    <de.r3chn3n.RechenpateApp.PaintView
         android:id="@+id/paint_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

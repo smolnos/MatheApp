@@ -1,4 +1,4 @@
-package com.example.RechenpateApp;
+package de.r3chn3n.RechenpateApp;
 
 import android.content.Context;
 import android.graphics.Canvas;
