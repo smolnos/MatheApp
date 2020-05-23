@@ -66,20 +66,33 @@ public class PaintView extends View {
                 if (circleOutOfScreen()) {
                     deleteCircle();
                 } else {
-                    if (eventDuration > 500) {
-                        changeShape(event);
-                    } else {
+                    if (!myCircles.get(indexMyCircles).isShapeHasChanged()) {
                         changeColor(event);
+                    } else {
+                        myCircles.get(indexMyCircles).setShapeHasChanged(false);
                     }
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                moveCircle(event);
+                mcNewPositionX = mcOnTouchX + event.getX() - moveX;
+                mcNewPositionY = mcOnTouchY + event.getY() - moveY;
+                if (isTouchStillInScreen()) {
+                    if (eventDuration > 200) {
+                        changeShape(event);
+                    }
+                } else {
+                        moveCircle(event);
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
                 break;
         }
         return true;
+    }
+
+    private boolean isTouchStillInScreen() {
+        return mcNewPositionX <= mcOnTouchX + MyCircle.RADIUS * 2 / 3 && mcNewPositionX >= mcOnTouchX - MyCircle.RADIUS * 2 / 3
+                && mcNewPositionY <= mcOnTouchY + MyCircle.RADIUS * 2 / 3 && mcNewPositionY >= mcOnTouchY - MyCircle.RADIUS * 2 / 3;
     }
 
     /**
@@ -89,15 +102,13 @@ public class PaintView extends View {
      * rectangle to circle if it was X before.
      */
     private void changeShape(MotionEvent event) {
-        mcNewPositionX = mcOnTouchX + event.getX() - moveX;
-        mcNewPositionY = mcOnTouchY + event.getY() - moveY;
-        if (mcNewPositionX <= mcOnTouchX +  MyCircle.RADIUS  * 2/3 && mcNewPositionX >= mcOnTouchX -  MyCircle.RADIUS  * 2/3
-                && mcNewPositionY <= mcOnTouchY +  MyCircle.RADIUS  * 2/3 && mcNewPositionY >= mcOnTouchY -  MyCircle.RADIUS  * 2/3) {
-            if (myCircles.get(indexMyCircles).getMyVariable() == Variable.number) {
-                myCircles.get(indexMyCircles).setMyVariable(Variable.X);
-            } else {
-                myCircles.get(indexMyCircles).setMyVariable(Variable.number);
-            }
+        if (!myCircles.get(indexMyCircles).isShapeHasChanged()) {
+                if (myCircles.get(indexMyCircles).getMyVariable() == Variable.number) {
+                    myCircles.get(indexMyCircles).setMyVariable(Variable.X);
+                } else {
+                    myCircles.get(indexMyCircles).setMyVariable(Variable.number);
+                }
+                myCircles.get(indexMyCircles).setShapeHasChanged(true);
         }
     }
 
@@ -164,8 +175,7 @@ public class PaintView extends View {
     private void changeColor(MotionEvent event) {
         mcNewPositionX = mcOnTouchX + event.getX() - moveX;
         mcNewPositionY = mcOnTouchY + event.getY() - moveY;
-        if (mcNewPositionX <= mcOnTouchX +  MyCircle.RADIUS  * 2/3 && mcNewPositionX >= mcOnTouchX -  MyCircle.RADIUS  * 2/3
-                && mcNewPositionY <= mcOnTouchY +  MyCircle.RADIUS  * 2/3 && mcNewPositionY >= mcOnTouchY -  MyCircle.RADIUS  * 2/3) {
+        if (isTouchStillInScreen()) {
             if (myCircles.get(indexMyCircles).getColor() == MyCircle.BLUE) {
                 myCircles.get(indexMyCircles).setColor(MyCircle.RED);
                 myCircles.get(indexMyCircles).setColorBorder(MyCircle.RED_BORDER);

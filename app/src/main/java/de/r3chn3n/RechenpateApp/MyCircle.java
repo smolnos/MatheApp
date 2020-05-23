@@ -27,6 +27,7 @@ public class MyCircle {
     private Rect mBounds = new Rect();
     private String color;
     private Variable myVariable;
+    private boolean shapeHasChanged;
 
 
     MyCircle() {
@@ -47,6 +48,7 @@ public class MyCircle {
         myText.setTextSize(70);
         myText.getTextBounds(text, 0, text.length(), mBounds);
         myVariable = Variable.number;
+        shapeHasChanged = false;
     }
 
     void setColor(int color) {
