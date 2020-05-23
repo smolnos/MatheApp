@@ -2,9 +2,17 @@ package de.r3chn3n.RechenpateApp;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.ColorFilter;
+import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+
+import androidx.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +45,17 @@ public class PaintView extends View {
         super(context);
     }
 
+    /**
+     * Depending on the event, a new circle is added (if there was no circle before), the color is
+     * changed (if there was a circle before) or the shape is changed (if the duration of the touch
+     * is longer than 2 seconds), the circle is deleted (if this circle is no longer on the screen),
+     * or the circle is moved
+     * @param event touch event
+     * @return boolean always return true
+     */
     public boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
+        long eventDuration = event.getEventTime() - event.getDownTime();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 if (isCircleNotPresent(event)) {
@@ -49,7 +66,11 @@ public class PaintView extends View {
                 if (circleOutOfScreen()) {
                     deleteCircle();
                 } else {
-                    changeColor(event);
+                    if (eventDuration > 500) {
+                        changeShape(event);
+                    } else {
+                        changeColor(event);
+                    }
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -59,6 +80,25 @@ public class PaintView extends View {
                 break;
         }
         return true;
+    }
+
+    /**
+     * if myCircle has been touched for more than 2 seconds, myVariable is changed to X if it was
+     * number before or vice versa.
+     * Therefore the shape is changed from circle to rectangle, if it was number first or from
+     * rectangle to circle if it was X before.
+     */
+    private void changeShape(MotionEvent event) {
+        mcNewPositionX = mcOnTouchX + event.getX() - moveX;
+        mcNewPositionY = mcOnTouchY + event.getY() - moveY;
+        if (mcNewPositionX <= mcOnTouchX +  MyCircle.RADIUS  * 2/3 && mcNewPositionX >= mcOnTouchX -  MyCircle.RADIUS  * 2/3
+                && mcNewPositionY <= mcOnTouchY +  MyCircle.RADIUS  * 2/3 && mcNewPositionY >= mcOnTouchY -  MyCircle.RADIUS  * 2/3) {
+            if (myCircles.get(indexMyCircles).getMyVariable() == Variable.number) {
+                myCircles.get(indexMyCircles).setMyVariable(Variable.X);
+            } else {
+                myCircles.get(indexMyCircles).setMyVariable(Variable.number);
+            }
+        }
     }
 
     /**
@@ -169,15 +209,58 @@ public class PaintView extends View {
 
     /**
      * second draw all points twice with different radius to simulate border of point
+     * if myVariable in myCircle has the value X, a rectangle is drawn instead of a circle
      * @param canvas canvas on which the rectangle and points are drawn
      */
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void draw(Canvas canvas) {
         super.draw(canvas);
         for (MyCircle myCircle : myCircles) {
-            canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS_BORDER, myCircle.getMyPaintBorder());
-            canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS, myCircle.getMyPaint());
+            if (myCircle.getMyVariable() == Variable.X) {
+                drawRectangle(canvas, myCircle);
+//                drawStar(canvas, myCircle);
+                drawText(canvas, myCircle);
+            } else {
+                canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS_BORDER, myCircle.getMyPaintBorder());
+                canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS, myCircle.getMyPaint());
+            }
         }
         invalidate();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void drawStar(Canvas canvas, MyCircle myCircle) {
+        float left = myCircle.getX() - MyCircle.RADIUS_BORDER *  2;
+        float top = myCircle.getY() - MyCircle.RADIUS_BORDER * 2;
+        float right = myCircle.getX() + MyCircle.RADIUS_BORDER * 2;
+        float bottom = myCircle.getY() + MyCircle.RADIUS_BORDER * 2;
+        Drawable d = getResources().getDrawable(R.drawable.ic_star_24px, null);
+        d.mutate().setColorFilter(myCircle.getMyPaint().getColor(), PorterDuff.Mode.SRC_IN);
+        d.setBounds((int)left, (int)top, (int)right, (int)bottom);
+        d.draw(canvas);
+    }
+
+    private void drawText(Canvas canvas, MyCircle myCircle) {
+        // Calculate x and y for text so it's centered.
+        float x = myCircle.getX() - myCircle.getMBounds().centerX();
+        float y =  myCircle.getY() - myCircle.getMBounds().centerY();
+        canvas.drawText(myCircle.getText(), x, y, myCircle.getMyText());
+    }
+
+    private void drawRectangle(Canvas canvas, MyCircle myCircle) {
+
+
+        float left = myCircle.getX() - MyCircle.RADIUS_BORDER;
+        float top = myCircle.getY() - MyCircle.RADIUS_BORDER;
+        float right = myCircle.getX() + MyCircle.RADIUS_BORDER;
+        float bottom = myCircle.getY() + MyCircle.RADIUS_BORDER;
+        canvas.drawRect(left, top, right, bottom, myCircle.getMyPaintBorder());
+
+        left = myCircle.getX() - MyCircle.RADIUS;
+        top = myCircle.getY() - MyCircle.RADIUS;
+        right = myCircle.getX() + MyCircle.RADIUS ;
+        bottom = myCircle.getY() + MyCircle.RADIUS;
+        canvas.drawRect(left, top, right, bottom, myCircle.getMyPaint());
     }
 
     @Override
