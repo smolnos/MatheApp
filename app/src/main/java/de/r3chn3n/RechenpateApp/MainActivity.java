@@ -22,6 +22,7 @@ import androidx.core.content.FileProvider;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.io.File;
+import java.util.Objects;
 
 import pub.devrel.easypermissions.EasyPermissions;
 
@@ -33,18 +34,21 @@ public class MainActivity extends AppCompatActivity {
     private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
     boolean isFABOpen = false;
     FloatingActionButton bAddPicture;
-    FloatingActionButton bDelete;
+    FloatingActionButton bDeletePhoto;
     FloatingActionButton bTakePicture;
     FloatingActionButton bGallery;
+    FloatingActionButton bDeleteCircle;
+    PaintView paintView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        paintView = findViewById(R.id.paint_view);
         bAddPicture = findViewById(R.id.btnAddPhoto);
-        bDelete = findViewById(R.id.btnDeletePhoto);
+        bDeletePhoto = findViewById(R.id.btnDeletePhoto);
+        bDeleteCircle = findViewById(R.id.btnDeleteCircle);
         bTakePicture = findViewById(R.id.btnTakePhoto);
         bGallery = findViewById(R.id.btnSelectPhoto);
         viewImage = findViewById(R.id.viewImage);
@@ -64,9 +68,11 @@ public class MainActivity extends AppCompatActivity {
                 boolean galleryTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
                 bTakePicture.getGlobalVisibleRect(outRect);
                 boolean takePictureTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
-                bDelete.getGlobalVisibleRect(outRect);
-                boolean deleteTouched = outRect.contains((int)event.getRawX(), (int) event.getRawY());
-                if (!(galleryTouched || takePictureTouched || deleteTouched)) {
+                bDeletePhoto.getGlobalVisibleRect(outRect);
+                boolean deletePhoto = outRect.contains((int)event.getRawX(), (int) event.getRawY());
+                bDeleteCircle.getGlobalVisibleRect(outRect);
+                boolean deleteCircle = outRect.contains((int)event.getRawX(), (int) event.getRawY());
+                if (!(galleryTouched || takePictureTouched || deletePhoto || deleteCircle)) {
                     closeFABMenu();
                     return true;
                 }
@@ -119,10 +125,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        bDelete.setOnClickListener(new View.OnClickListener() {
+        bDeletePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 viewImage.setImageDrawable(null);
+                closeFABMenu();
+            }
+        });
+
+        bDeleteCircle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //ToDo
+                paintView.deleteCircles();
                 closeFABMenu();
             }
         });
@@ -131,12 +146,14 @@ public class MainActivity extends AppCompatActivity {
     private void closeFABMenu() {
         isFABOpen = false;
         bAddPicture.animate().translationY(0);
-        bDelete.animate().translationY(0);
+        bDeletePhoto.animate().translationY(0);
+        bDeleteCircle.animate().translationY(0);
         bTakePicture.animate().translationY(0);
         bGallery.animate().translationY(0);
         bTakePicture.setVisibility(View.INVISIBLE);
         bGallery.setVisibility(View.INVISIBLE);
-        bDelete.setVisibility(View.INVISIBLE);
+        bDeletePhoto.setVisibility(View.INVISIBLE);
+        bDeleteCircle.setVisibility(View.INVISIBLE);
     }
 
     /**
@@ -148,10 +165,12 @@ public class MainActivity extends AppCompatActivity {
     private void showFABMenu() {
         isFABOpen=true;
         bAddPicture.animate().translationY(-getResources().getDimension(R.dimen.standard_155));
-        bDelete.setVisibility(View.VISIBLE);
+        bDeletePhoto.setVisibility(View.VISIBLE);
+        bDeleteCircle.setVisibility(View.VISIBLE);
         bTakePicture.setVisibility(View.VISIBLE);
         bGallery.setVisibility(View.VISIBLE);
-        bDelete.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        bDeletePhoto.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
+        bDeleteCircle.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
         bTakePicture.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
         bGallery.animate().translationY(-getResources().getDimension(R.dimen.standard_55));
     }
@@ -163,15 +182,16 @@ public class MainActivity extends AppCompatActivity {
      * @param resultCode = RESULT_OK TODO was bedeutet das?
      * @param data the information of the picture
      */
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
             Bitmap photo;
             if (requestCode == 1) {
-                photo = (Bitmap) data.getExtras().get("data");
+                photo = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 viewImage.setImageBitmap(photo);
-                bDelete.setVisibility(View.VISIBLE);
+                bDeletePhoto.setVisibility(View.VISIBLE);
             } else if (requestCode == 2) {
                 Uri selectedImage = data.getData();
                 String[] filePath = {MediaStore.Images.Media.DATA};
@@ -184,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                 c.close();
                 photo = (BitmapFactory.decodeFile(picturePath));
                 viewImage.setImageBitmap(photo);
-                bDelete.setVisibility(View.VISIBLE);
+                bDeletePhoto.setVisibility(View.VISIBLE);
             }
             closeFABMenu();
         }
