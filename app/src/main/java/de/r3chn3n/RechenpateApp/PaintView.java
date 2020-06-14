@@ -77,7 +77,7 @@ public class PaintView extends View {
                 mcNewPositionX = mcOnTouchX + event.getX() - moveX;
                 mcNewPositionY = mcOnTouchY + event.getY() - moveY;
                 if (isTouchStillInScreen()) {
-                    if (eventDuration > 200) {
+                    if (eventDuration > 800) {
                         changeShape(event);
                     }
                 } else {
@@ -91,8 +91,8 @@ public class PaintView extends View {
     }
 
     private boolean isTouchStillInScreen() {
-        return mcNewPositionX <= mcOnTouchX + MyCircle.RADIUS * 2 / 3 && mcNewPositionX >= mcOnTouchX - MyCircle.RADIUS * 2 / 3
-                && mcNewPositionY <= mcOnTouchY + MyCircle.RADIUS * 2 / 3 && mcNewPositionY >= mcOnTouchY - MyCircle.RADIUS * 2 / 3;
+        return mcNewPositionX <= mcOnTouchX + myCircles.get(indexMyCircles).RADIUS * 2 / 3 && mcNewPositionX >= mcOnTouchX - myCircles.get(indexMyCircles).RADIUS * 2 / 3
+                && mcNewPositionY <= mcOnTouchY + myCircles.get(indexMyCircles).RADIUS * 2 / 3 && mcNewPositionY >= mcOnTouchY - myCircles.get(indexMyCircles).RADIUS * 2 / 3;
     }
 
     /**
@@ -120,9 +120,9 @@ public class PaintView extends View {
      * myCircleY) and radius RADIUS
      */
     private boolean isEventInCircle(MyCircle myCircle, MotionEvent event) {
-        return event.getX() <= myCircle.getX() + MyCircle.RADIUS + OFFSET / 2. && event.getX() >= myCircle.getX()
-                - MyCircle.RADIUS -  OFFSET / 2. && event.getY() <= myCircle.getY() + MyCircle.RADIUS  + OFFSET / 2. &&
-                event.getY() >= myCircle.getY() - MyCircle.RADIUS -  OFFSET / 2.;
+        return event.getX() <= myCircle.getX() + myCircle.RADIUS + OFFSET / 2. && event.getX() >= myCircle.getX()
+                - myCircle.RADIUS -  OFFSET / 2. && event.getY() <= myCircle.getY() + myCircle.RADIUS  + OFFSET / 2. &&
+                event.getY() >= myCircle.getY() - myCircle.RADIUS -  OFFSET / 2.;
     }
 
     /**
@@ -231,8 +231,8 @@ public class PaintView extends View {
 //                drawStar(canvas, myCircle);
                 drawText(canvas, myCircle);
             } else {
-                canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS_BORDER, myCircle.getMyPaintBorder());
-                canvas.drawCircle(myCircle.getX(), myCircle.getY(), MyCircle.RADIUS, myCircle.getMyPaint());
+                canvas.drawCircle(myCircle.getX(), myCircle.getY(), myCircle.RADIUS_BORDER, myCircle.getMyPaintBorder());
+                canvas.drawCircle(myCircle.getX(), myCircle.getY(), myCircle.RADIUS, myCircle.getMyPaint());
             }
         }
         invalidate();
@@ -240,10 +240,10 @@ public class PaintView extends View {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void drawStar(Canvas canvas, MyCircle myCircle) {
-        float left = myCircle.getX() - MyCircle.RADIUS_BORDER *  2;
-        float top = myCircle.getY() - MyCircle.RADIUS_BORDER * 2;
-        float right = myCircle.getX() + MyCircle.RADIUS_BORDER * 2;
-        float bottom = myCircle.getY() + MyCircle.RADIUS_BORDER * 2;
+        float left = myCircle.getX() - myCircle.RADIUS_BORDER *  2;
+        float top = myCircle.getY() - myCircle.RADIUS_BORDER * 2;
+        float right = myCircle.getX() + myCircle.RADIUS_BORDER * 2;
+        float bottom = myCircle.getY() + myCircle.RADIUS_BORDER * 2;
         Drawable d = getResources().getDrawable(R.drawable.ic_star_24px, null);
         d.mutate().setColorFilter(myCircle.getMyPaint().getColor(), PorterDuff.Mode.SRC_IN);
         d.setBounds((int)left, (int)top, (int)right, (int)bottom);
@@ -260,16 +260,16 @@ public class PaintView extends View {
     private void drawRectangle(Canvas canvas, MyCircle myCircle) {
 
 
-        float left = myCircle.getX() - MyCircle.RADIUS_BORDER;
-        float top = myCircle.getY() - MyCircle.RADIUS_BORDER;
-        float right = myCircle.getX() + MyCircle.RADIUS_BORDER;
-        float bottom = myCircle.getY() + MyCircle.RADIUS_BORDER;
+        float left = myCircle.getX() - myCircle.RADIUS_BORDER;
+        float top = myCircle.getY() - myCircle.RADIUS_BORDER;
+        float right = myCircle.getX() + myCircle.RADIUS_BORDER;
+        float bottom = myCircle.getY() + myCircle.RADIUS_BORDER;
         canvas.drawRect(left, top, right, bottom, myCircle.getMyPaintBorder());
 
-        left = myCircle.getX() - MyCircle.RADIUS;
-        top = myCircle.getY() - MyCircle.RADIUS;
-        right = myCircle.getX() + MyCircle.RADIUS ;
-        bottom = myCircle.getY() + MyCircle.RADIUS;
+        left = myCircle.getX() - myCircle.RADIUS;
+        top = myCircle.getY() - myCircle.RADIUS;
+        right = myCircle.getX() + myCircle.RADIUS ;
+        bottom = myCircle.getY() + myCircle.RADIUS;
         canvas.drawRect(left, top, right, bottom, myCircle.getMyPaint());
     }
 
