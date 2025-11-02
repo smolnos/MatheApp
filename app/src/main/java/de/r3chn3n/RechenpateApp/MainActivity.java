@@ -24,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.io.File;
 import java.util.Objects;
 
+import de.r3chn3n.RechenpateApp.R;
 import pub.devrel.easypermissions.EasyPermissions;
 
 public class MainActivity extends AppCompatActivity {
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int GALLERY_REQUEST = 2;
     private static final int MY_CAMERA_PERMISSION_CODE = 100;
     private ImageView viewImage;
-    private String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
+    private final String[] galleryPermissions = {Manifest.permission.READ_EXTERNAL_STORAGE};
     boolean isFABOpen = false;
     FloatingActionButton bAddPicture;
     FloatingActionButton bDeletePhoto;
@@ -115,7 +116,12 @@ public class MainActivity extends AppCompatActivity {
                 if (EasyPermissions.hasPermissions(MainActivity.this, galleryPermissions)) {
                     File imagePath = new File(MainActivity.this.getFilesDir(), "images");
                     File newFile = new File(imagePath, "default_image.jpg");
-                    Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", newFile);
+                    Uri uri = FileProvider.getUriForFile(
+                            MainActivity.this,
+                            BuildConfig.APPLICATION_ID + ".provider",
+                            newFile
+                    );
+                    //Uri uri = FileProvider.getUriForFile(MainActivity.this, BuildConfig.APPLICATION_ID + ".provider", newFile);
                     Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
                     startActivityForResult(intent, GALLERY_REQUEST);
